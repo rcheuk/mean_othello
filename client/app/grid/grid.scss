@@ -1,0 +1,13 @@
+/** Variables **/
+
+$text-color: #000;
+
+html, body {
+  margin: 0;
+  padding: 0;
+
+  background: #faf8ef;
+  color: $text-color;
+  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
+  font-size: 18px;
+}
