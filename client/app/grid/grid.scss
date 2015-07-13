@@ -1,20 +1,23 @@
 /** Variables **/
 
-$text-color: #000;
+$black: #000;
+$white: #fff;
+$boardGreen: #339933;
 
 html, body {
   margin: 0;
   padding: 0;
 
   background: #faf8ef;
-  color: $text-color;
+  color: $black;
   font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
 }
 
 .grid-container {
-  width: 500px;
+  width: 482px;
   margin: 0 auto;
   padding: 0;
+  border: $black solid 1px;
 }
 
 .grid-row {
@@ -27,10 +30,10 @@ html, body {
 
 .grid-tile {
   display: inline-block;
-  border: 1px solid #000;
+  border: 1px solid $black;
   width: 60px;
   height: 60px;
-  background-color: green;
+  background-color: $boardGreen;
 }
 
 .grid-cell-circle {
@@ -47,13 +50,13 @@ html, body {
 }
 
 .whiteFill {
-  fill: #fff;
-  stroke: #fff;
+  fill: $white;
+  stroke: $white;
 }
 
 .blackFill {
-  fill: #000;
-  stroke: #000;
+  fill: $black;
+  stroke: $black;
 }
 
 .noFill {

@@ -31,6 +31,9 @@ angular.module('reversiApp', ['Game',
         GameService.createGame(function (game) {
           $scope.game = game;
           if (localStorage) {
+            // left commented out while developing
+            // though the storage of game id needs to be tested further
+            // prior to implementation
             //localStorage['othelloGameId'] = game._id;
           }
           console.log('created game', game);

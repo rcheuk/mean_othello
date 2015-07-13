@@ -11,6 +11,7 @@
 
 var _ = require('lodash');
 var Game = require('./game.model');
+var Queue = require('queue-fifo');
 
 // Get list of games
 exports.index = function(req, res) {
@@ -51,12 +52,16 @@ exports.update = function(req, res) {
   });
 };
 
-// process the Move
+// process a move by setting the color of the played move,
+// then call a method to flip the necessary tiles
+// and recalculate the available moves
+// update the game in the database
 exports.processMove = function(req, res) {
   var move = req.body;
   var xPos = move.xMove;
   var yPos = move.yMove;
   var game = move.game;
+
   if (game.playerOneTurn) {
     game.grid[xPos].tiles[yPos].isBlack = true;
     game.grid[xPos].tiles[yPos].isEmpty = false;
@@ -65,7 +70,12 @@ exports.processMove = function(req, res) {
     game.grid[xPos].tiles[yPos].isEmpty = false;
   }
   game.playerOneTurn = !game.playerOneTurn;
-  findAvailableMoves(game);
+  game = reverseTiles(game, move);
+  game = findAvailableMoves(game);
+  // there probably is a way to combine the two methods above, so
+  // reversing occurs while also identifying additional moves?
+
+  // update game
   game.findById(game._id, function(err, gameResult) {
     if (err) { return handleError(res, err);}
     if (!game) { return res.send(404); }
@@ -78,8 +88,19 @@ exports.processMove = function(req, res) {
   return res.json(200, req.body);
 };
 
+// reverseTiles
+var reverseTiles = function(game, move) {
+  // reverseTiles based on the move performed
+}
+
 // identifies available moves
 var findAvailableMoves = function(game) {
+  var grid = game.grid;
+  var queue = new Queue();
+  var next = state;
+  var startX = 0, startY = 0;
+  var isBlack;
+  // scan all directions for available moves
 
 };
 

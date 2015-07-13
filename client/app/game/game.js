@@ -3,6 +3,8 @@
 /**
 This game's architect and design was loosely inspired by an Angular implementation
 of 2048: http://d.pr/pNtX
+
+though, at the end of this writing, it has diverged signficantly.
 **/
 angular.module('Game', ['Grid', 'ngCookies'])
 .factory('GameModel', function() {

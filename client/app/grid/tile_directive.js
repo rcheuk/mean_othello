@@ -12,9 +12,10 @@ angular.module('Grid')
         move: '=clickTile'
   		},
   		link: function(scope, element, attrs) {
-      		element.bind('click', function () {
-            scope.move(scope.xPos, scope.yPos);
-      		});
+        // listens for click event, and sends position of tile that was clicked
+    		element.bind('click', function () {
+          scope.move(scope.xPos, scope.yPos);
+    		});
       }
     };
 });
