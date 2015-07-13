@@ -40,6 +40,7 @@ angular.module('Game', ['Grid', 'ngCookies'])
     gameObject.grid = GridService.getGrid();
     $http.post('/api/games', gameObject).success(function(result) {
       if (result) {
+        console.log('result');
         callback(result);
       } else {
         callback(null);
@@ -48,9 +49,17 @@ angular.module('Game', ['Grid', 'ngCookies'])
     this.reinit();
   }
 
-  this.move = function() {
+  this.processMove = function(x, y, _game) {
+    var move = {
+      xMove: x,
+      yMove: y,
+      game: _game
+    }
+    $http.post('/api/games/processMove', move).success(function (game) {
+      callback(game);
+    });
 
-  };
+  }
 
   this.movesAvailable = function() {
 

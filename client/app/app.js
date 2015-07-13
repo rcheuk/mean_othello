@@ -25,13 +25,23 @@ angular.module('reversiApp', ['Game',
         var gameId = localStorage['othelloGameId'];
         GameService.getGame(gameId, function(game) {
           $scope.game = game;
+          console.log('gotGame', game);
         });
       } else {
         GameService.createGame(function (game) {
           $scope.game = game;
+          if (localStorage) {
+            //localStorage['othelloGameId'] = game._id;
+          }
+          console.log('created game', game);
         });
       }
     };
 
     this.loadOrCreateGame();
+
+
+    this.move = function(xPos, yPos) {
+      GameService.processMove(xPos, yPos, $scope.game);
+    };
 });

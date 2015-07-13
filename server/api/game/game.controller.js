@@ -51,6 +51,38 @@ exports.update = function(req, res) {
   });
 };
 
+// process the Move
+exports.processMove = function(req, res) {
+  var move = req.body;
+  var xPos = move.xMove;
+  var yPos = move.yMove;
+  var game = move.game;
+  if (game.playerOneTurn) {
+    game.grid[xPos].tiles[yPos].isBlack = true;
+    game.grid[xPos].tiles[yPos].isEmpty = false;
+  } else {
+    game.grid[xPos].tiles[yPos].isWhite = true;
+    game.grid[xPos].tiles[yPos].isEmpty = false;
+  }
+  game.playerOneTurn = !game.playerOneTurn;
+  findAvailableMoves(game);
+  game.findById(game._id, function(err, gameResult) {
+    if (err) { return handleError(res, err);}
+    if (!game) { return res.send(404); }
+    var updated = _.merge(gameResult, game);
+    updated.save(function(err) {
+      if (err) { return handleError(res, err); }
+        return res.json(200, gameResult);
+    });
+  });
+  return res.json(200, req.body);
+};
+
+// identifies available moves
+var findAvailableMoves = function(game) {
+
+};
+
 // Deletes a game from the DB.
 exports.destroy = function(req, res) {
   Game.findById(req.params.id, function (err, game) {

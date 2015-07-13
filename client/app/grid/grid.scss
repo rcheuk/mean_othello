@@ -9,5 +9,54 @@ html, body {
   background: #faf8ef;
   color: $text-color;
   font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
-  font-size: 18px;
+}
+
+.grid-container {
+  width: 500px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.grid-row {
+  margin: 0;
+  padding: 0;
+  height: 60px;
+  line-height: 1;
+  font-size: 12pt;
+}
+
+.grid-tile {
+  display: inline-block;
+  border: 1px solid #000;
+  width: 60px;
+  height: 60px;
+  background-color: green;
+}
+
+.grid-cell-circle {
+  width: 60px;
+  height: 60px;
+}
+
+.center {
+  text-align: center;
+}
+
+.title {
+  font-size: 36pt;
+}
+
+.whiteFill {
+  fill: #fff;
+  stroke: #fff;
+}
+
+.blackFill {
+  fill: #000;
+  stroke: #000;
+}
+
+.noFill {
+  fill: none;
+  stroke: none;
 }

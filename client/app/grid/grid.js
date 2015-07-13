@@ -4,12 +4,14 @@ angular.module('Grid', [])
 .factory('TileFactory', function() {
   var tileFactory = {};
 
-  tileFactory.getTile = function() {
+  tileFactory.getTile = function(xPosition, yPosition) {
     var tile = {
       isBlack: false,
       isWhite: false,
       isEmpty: true,
-      isAvailableMove: false
+      isAvailableMove: false,
+      xPosition: "" + xPosition,
+      yPosition: "" + yPosition
     };
     return tile;
   };
@@ -39,16 +41,20 @@ angular.module('Grid', [])
     // Initialize our grid as multi dimensional array
     self.grid = [];
     for (var x = 0; x < service.size; x++) {
-      self.grid[x] = [];
+      self.grid[x] = { tiles: [] };
       for (var y = 0; y < service.size; y++) {
-        self.grid[x][y] = TileFactory.getTile();
+        self.grid[x].tiles.push(TileFactory.getTile(x, y));
       }
     }
     // set inital pieces
-    self.grid[4][4].isWhite = true;
-    self.grid[4][5].isBlack = true;
-    self.grid[5][4].isBlack = true;
-    self.grid[5][5].isWhite = true;
+    self.grid[3].tiles[3].isWhite = true;
+    self.grid[3].tiles[3].isEmpty = false;
+    self.grid[3].tiles[4].isBlack = true;
+    self.grid[3].tiles[4].isEmpty = false;
+    self.grid[4].tiles[3].isBlack = true;
+    self.grid[4].tiles[3].isEmpty = false;
+    self.grid[4].tiles[4].isWhite = true;
+    self.grid[4].tiles[4].isEmpty = false;
   };
   return this;
 });
