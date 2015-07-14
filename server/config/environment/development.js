@@ -5,8 +5,8 @@
 module.exports = {
   // MongoDB connection options
   mongo: {
-    uri: 'mongodb://localhost/reversi-dev'
+    uri: 'mongodb://localhost/othello-dev'
   },
 
-  seedDB: true
+  seedDB: false
 };

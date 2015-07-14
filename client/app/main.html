@@ -9,8 +9,8 @@
     <div class="grid-container">
       <div class="grid-row" ng-repeat="tiles in game.grid">
         <div class="grid-tile" ng-repeat="tile in tiles.tiles">
-          <svg class="grid-cell-circle" tile available="tile.isAvailableMove" xindex="tile.xPosition" yindex="tile.yPosition" click-tile="ctrl.move">
-            <circle ng-class="{ 'whiteFill': tile.isWhite, 'blackFill': tile.isBlack, 'noFill': tile.isEmpty}" cx="30" cy="30" r="28"/>
+          <svg class="grid-cell-circle" ng-class="{'noFill': tile.isEmpty, 'availableBlack': (game.playerOneTurn && tile.isAvailableMove), 'availableWhite': (!game.playerOneTurn && tile.isAvailableMove)}" tile xindex="tile.xPosition" yindex="tile.yPosition" click-tile="ctrl.move">
+            <circle ng-class="{ 'whiteFill': tile.isWhite, 'blackFill': tile.isBlack }" cx="30" cy="30" r="28"/>
           </svg>
         </div>
       </div>

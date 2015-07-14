@@ -59,7 +59,23 @@ html, body {
   stroke: $black;
 }
 
-.noFill {
+.noFill > circle {
   fill: none;
   stroke: none;
+}
+
+svg.availableBlack {
+  &:hover > circle {
+    fill: rgba(28, 28, 28, 0.5);
+    stroke: #474;
+    visibility: visible;
+  }
+}
+
+svg.availableWhite {
+  &:hover > circle {
+    fill: rgba(222, 222, 222, 0.5);
+    stroke: #CCC;
+    visibility: visible;
+  }
 }

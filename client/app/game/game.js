@@ -51,7 +51,7 @@ angular.module('Game', ['Grid', 'ngCookies'])
     this.reinit();
   }
 
-  this.processMove = function(x, y, _game) {
+  this.processMove = function(x, y, _game, callback) {
     var move = {
       xMove: x,
       yMove: y,

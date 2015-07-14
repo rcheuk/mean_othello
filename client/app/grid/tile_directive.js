@@ -8,7 +8,6 @@ angular.module('Grid')
   		scope: {
   			xPos: '=xindex',
   			yPos: '=yindex',
-        availableMove: '=available',
         move: '=clickTile'
   		},
   		link: function(scope, element, attrs) {
