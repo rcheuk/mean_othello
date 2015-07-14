@@ -12,6 +12,8 @@
 var _ = require('lodash');
 var Game = require('./game.model');
 var Queue = require('queue-fifo');
+var utilities = require('./game.utilities');
+
 
 // Get list of games
 exports.index = function(req, res) {
@@ -32,7 +34,8 @@ exports.show = function(req, res) {
 
 // Creates a new game in the DB.
 exports.create = function(req, res) {
-  Game.create(req.body, function(err, game) {
+  var game = findAvailableMoves(req.body, true);
+  Game.create(game, function(err, game) {
     if(err) { return handleError(res, err); }
     return res.json(201, game);
   });
@@ -41,7 +44,7 @@ exports.create = function(req, res) {
 // Updates an existing game in the DB.
 exports.update = function(req, res) {
   if(req.body._id) { delete req.body._id; }
-  game.findById(req.params.id, function (err, game) {
+  Game.findById(req.params.id, function (err, game) {
     if (err) { return handleError(res, err); }
     if(!game) { return res.send(404); }
     var updated = _.merge(game, req.body);
@@ -57,51 +60,75 @@ exports.update = function(req, res) {
 // and recalculate the available moves
 // update the game in the database
 exports.processMove = function(req, res) {
-  var move = req.body;
-  var xPos = move.xMove;
-  var yPos = move.yMove;
-  var game = move.game;
+  var data = req.body;
+  var move = {
+    xPos: data.xMove,
+    yPos: data.yMove
+  };
+  var gameObject = data.game;
 
-  if (game.playerOneTurn) {
-    game.grid[xPos].tiles[yPos].isBlack = true;
-    game.grid[xPos].tiles[yPos].isEmpty = false;
+  if (gameObject.playerOneTurn) {
+    gameObject.grid[move.xPos].tiles[move.yPos].isBlack = true;
+    gameObject.grid[move.xPos].tiles[move.yPos].isEmpty = false;
   } else {
-    game.grid[xPos].tiles[yPos].isWhite = true;
-    game.grid[xPos].tiles[yPos].isEmpty = false;
+    gameObject.grid[move.xPos].tiles[move.yPos].isWhite = true;
+    gameObject.grid[move.xPos].tiles[move.yPos].isEmpty = false;
   }
-  game.playerOneTurn = !game.playerOneTurn;
-  game = reverseTiles(game, move);
-  game = findAvailableMoves(game);
-  // there probably is a way to combine the two methods above, so
-  // reversing occurs while also identifying additional moves?
+  gameObject = reverseTiles(gameObject, move);
+  gameObject = findAvailableMoves(gameObject, false, move);
+
+  // set active player
+  gameObject.playerOneTurn = !gameObject.playerOneTurn;
 
   // update game
-  game.findById(game._id, function(err, gameResult) {
+  Game.findById(gameObject._id, function(err, gameResult) {
     if (err) { return handleError(res, err);}
-    if (!game) { return res.send(404); }
-    var updated = _.merge(gameResult, game);
+    if (!gameObject) { return res.send(404); }
+    var updated = _.merge(gameResult, gameObject);
     updated.save(function(err) {
       if (err) { return handleError(res, err); }
         return res.json(200, gameResult);
     });
   });
-  return res.json(200, req.body);
 };
+
+var DIRECTIONS = utilities.directions();
 
 // reverseTiles
 var reverseTiles = function(game, move) {
   // reverseTiles based on the move performed
+  // scan 8 directions to check for tile reversals
+  console.log('reversing tiles');
+  var isBlack = game.grid[move.xPos].tiles[move.yPos].isBlack;
+  for (var direction in DIRECTIONS){
+    var xStart = move.xPos, yStart = move.yPos;
+    flipTiles(direction, xStart, yStart, isBlack, game)
+  }
+  return game;
+}
+
+var flipTiles = function(direction, xMove, yMove, isBlack, game) {
+  
 }
 
 // identifies available moves
-var findAvailableMoves = function(game) {
+var findAvailableMoves = function(game, newGame, move) {
   var grid = game.grid;
   var queue = new Queue();
-  var next = state;
-  var startX = 0, startY = 0;
+  var startX, startY;
   var isBlack;
-  // scan all directions for available moves
-
+  if (newGame) {
+    // preset available moves, since they never change
+    grid[4].tiles[5].isAvailableMove = true;
+    grid[5].tiles[4].isAvailableMove = true;
+    grid[3].tiles[2].isAvailableMove = true;
+    grid[2].tiles[3].isAvailableMove = true;
+  } else {
+      // use last move as starting point for identifying available moves
+      startX = move.xPos;
+      startY = move.yPos;
+  }
+  return game;
 };
 
 // Deletes a game from the DB.
