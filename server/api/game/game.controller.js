@@ -69,24 +69,30 @@ exports.processMove = function(req, res) {
 
   if (gameObject.playerOneTurn) {
     gameObject.grid[move.xPos].tiles[move.yPos].isBlack = true;
-    gameObject.grid[move.xPos].tiles[move.yPos].isEmpty = false;
   } else {
     gameObject.grid[move.xPos].tiles[move.yPos].isWhite = true;
-    gameObject.grid[move.xPos].tiles[move.yPos].isEmpty = false;
   }
+
+  gameObject.grid[move.xPos].tiles[move.yPos].isEmpty = false;
+  gameObject.grid[move.xPos].tiles[move.yPos].isAvailableMove = false;
+
   gameObject = reverseTiles(gameObject, move);
-  gameObject = findAvailableMoves(gameObject, false, move);
+  //gameObject = findAvailableMoves(gameObject, false, move);
 
   // set active player
   gameObject.playerOneTurn = !gameObject.playerOneTurn;
 
+  console.log('game done processing ', gameObject.grid[3].tiles[3]);
+
   // update game
   Game.findById(gameObject._id, function(err, gameResult) {
     if (err) { return handleError(res, err);}
-    if (!gameObject) { return res.send(404); }
+    if (!gameResult) { return res.send(404); }
     var updated = _.merge(gameResult, gameObject);
     updated.save(function(err) {
       if (err) { return handleError(res, err); }
+      console.log('game merge ', gameResult.grid[3].tiles[3]);
+
         return res.json(200, gameResult);
     });
   });
@@ -102,13 +108,51 @@ var reverseTiles = function(game, move) {
   var isBlack = game.grid[move.xPos].tiles[move.yPos].isBlack;
   for (var direction in DIRECTIONS){
     var xStart = move.xPos, yStart = move.yPos;
-    flipTiles(direction, xStart, yStart, isBlack, game)
+    game = flipTiles(direction, xStart, yStart, isBlack, game)
+    console.log('game ', game.grid[3].tiles[3]);
   }
   return game;
 }
 
 var flipTiles = function(direction, xMove, yMove, isBlack, game) {
-  
+  //console.log('direction in flip', direction);
+  var x = +xMove + +DIRECTIONS[direction].x, y = +yMove + +DIRECTIONS[direction].y;
+  var q = new Queue();
+  try {
+    // bounds check
+    while (x > -1 && y > -1 && x < 8 && y < 8) {
+      var next = game.grid[x].tiles[y];
+      //console.log('next id', next);
+      if (next) {
+        console.log('values of black', !isBlack); // false
+        console.log('values of black2', next.isBlack); // false
+        // consider empty check?
+        console.log('isBlack', !isBlack && next.isBlack);
+        if (next.isWhite && isBlack) {
+          // opposite colors, add to stack, and keep going
+          console.log('adding node', next);
+          q.enqueue(next);
+        } else if (next.isBlack && !isBlack){
+          console.log('adding node2', next);
+          q.enqueue(next);
+        } else {
+          // found opposite color, check if queue empty
+          while (q.size() > 0) {
+            var cell = q.dequeue();
+            cell.isBlack = !cell.isBlack;
+            cell.isWhite = !cell.isWhite;
+            console.log('changed cell to black', isBlack);
+          }
+        }
+      }
+      x = x + DIRECTIONS[direction].x;
+      y = y + DIRECTIONS[direction].y;
+      //console.log('x, y', x, y);
+    }
+    return game;
+  } catch (err) {
+    console.log('err', err);
+  }
 }
 
 // identifies available moves
@@ -128,6 +172,7 @@ var findAvailableMoves = function(game, newGame, move) {
       startX = move.xPos;
       startY = move.yPos;
   }
+  console.log('game in find moves', game.grid[3].tiles[3]);
   return game;
 };
 
