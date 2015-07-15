@@ -7,7 +7,6 @@ $boardGreen: #339933;
 html, body {
   margin: 0;
   padding: 0;
-
   background: #faf8ef;
   color: $black;
   font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
@@ -78,4 +77,17 @@ svg.availableWhite {
     stroke: #CCC;
     visibility: visible;
   }
+}
+
+.boardBody {
+	background: #f3e2c7; 
+	width: 522px;
+	padding: 20px;
+	border-radius: 10px;
+}
+
+.board {
+	margin: 0 auto;
+	width: 522px;
+	border-radius: 10px;
 }

@@ -47,6 +47,7 @@ angular.module('reversiApp', ['Game',
     this.move = function(xPos, yPos) {
       GameService.processMove(xPos, yPos, $scope.game, function(result) {
         console.log('processed move', result);
+        $scope.game = result;
       });
     };
 });
