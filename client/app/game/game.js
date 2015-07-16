@@ -27,9 +27,11 @@ angular.module('Game', ['Grid', 'ngCookies'])
   this.grid = GridService.grid;
 
   this.getGame = function(id, callback) {
-    $http.get('/api/games/' + id).success( function(game) {
-      callback(game);
-    });
+    if (id) {
+      $http.get('/api/games/' + id).success( function(game) {
+        callback(game);
+      });
+    }
   }
 
   this.deleteGame = function(id, callback) {

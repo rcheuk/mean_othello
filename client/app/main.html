@@ -8,7 +8,9 @@
 
   <div class="instructions">
     <p>
-      Othello is a game played by ...
+      Othello is a game played using ... <br/>
+      Magic. Superpowers. Wits. Chaos. <br/>
+      How do you play?
     </p>
   </div>
 
@@ -35,26 +37,28 @@
   <div class="stats">
     <h2 class="center">Player {{game.playerOneTurn ? '1' : '2'}}'s Turn: {{game.playerOneTurn ? 'Black' : 'White'}}</h2>
 
-    <div class="col-md-4 col-md-offset-2">
-      <label class="right">Player 1:</label>
-    </div>
-    <div class="col-md-6">
-      <p class="score black">
-        {{game.playerOneScore}} score
-      </p>
-    </div>
+    <div class="score col-md-11">
+      <div class="col-md-4 col-md-offset-2">
+        <label class="right">Player 1:</label>
+      </div>
+      <div class="col-md-6">
+        <p class="black">
+          {{game.playerOneScore}}
+        </p>
+      </div>
 
-    <div class="col-md-4 col-md-offset-2">
-      <label class="right">Player 2:</label>
-    </div>
-    <div class="col-md-6">
-      <p class="score white">
-        {{game.playerTwoScore}} score
-      </p>
+      <div class="col-md-4 col-md-offset-2">
+        <label class="right">Player 2:</label>
+      </div>
+      <div class="col-md-6">
+        <p class="white">
+          {{game.playerTwoScore}}
+        </p>
+      </div>
     </div>
 
     <div class="controls center">
-      <a ng-click="restart()" class="button">New Game</a>
+      <a ng-click="ctrl.restart()" class="button">New Game</a>
     </div>
   </div>
 </aside>

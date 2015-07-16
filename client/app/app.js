@@ -24,26 +24,23 @@ angular.module('reversiApp', ['Game',
       // check browser if game exists
       if (localStorage && localStorage['othelloGameId']) {
         var gameId = localStorage['othelloGameId'];
-        GameService.getGame(gameId, function(game) {
-          $scope.game = game;
-          console.log('gotGame', game);
-        }).error(function(err) {
-          console.log('err', err);
-        });
+        if (gameId) {
+          GameService.getGame(gameId, function(game) {
+            $scope.game = game;
+            console.log('gotGame', game);
+          });
+        }
       } else {
         GameService.createGame(function (game) {
           $scope.game = game;
 
           if (localStorage) {
-            // left commented out while developing
-            // though the storage of game id needs to be tested further
-            // prior to implementation
-            //localStorage['othelloGameId'] = game._id;
+            localStorage['othelloGameId'] = game._id;
           }
           console.log('created game', game);
         });
       }
-    };
+    }
 
     this.loadOrCreateGame();
 
@@ -53,12 +50,12 @@ angular.module('reversiApp', ['Game',
         console.log('processed move', result);
         $scope.game = result;
       });
-    };
+    }
 
     this.restart = function() {
       console.log('deleting');
       delete localStorage['othelloGameId'];
-      GameService.delete(game._id, function(result) {
+      GameService.deleteGame($scope.game._id, function(result) {
         if (result) {
           console.log('delete successul');
         }
