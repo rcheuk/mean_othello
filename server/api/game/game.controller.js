@@ -110,7 +110,7 @@ var reverseTiles = function(game, move) {
 }
 
 /**
-For simplicity and readability, this function might be a bit verbose than needed
+For simplicity and readability, this function might be a bit more verbose than needed
 in terms of how it was written; could potentially be optimized, but maybe that
 will be saved for a later date.
 **/
@@ -124,38 +124,45 @@ var flipTiles = function(direction, xMove, yMove, isBlack, game) {
       var next = game.grid[x].tiles[y];
       if (next) {
 				// if new piece is black;
-				if (isBlack) {
-					if (next.isWhite) {
-						// opposite colors, add to stack, and keep going
-						q.enqueue(next);
-					} else if (next.isBlack) {
-						// once find same color, flip colors
-						while (q.size() > 0) {
-							var cell = q.dequeue();
-							cell.isBlack = !cell.isBlack;
-							cell.isWhite = !cell.isWhite;
-						}
-					} else {
-							// no match, but found a potential move?
-							if (q.size() > 0) {
-								q.clear();
-							}
-					}
-				} else {
-					if (next.isBlack) {
-						q.enqueue(next);
-					} else if (next.isWhite) {
-						while (q.size() > 0) {
-							var cell = q.dequeue();
-							cell.isBlack = !cell.isBlack;
-							cell.isWhite = !cell.isWhite;
-						}
-					} else {
-						if (q.size() > 0) {
-							q.clear();
-						}
-					}
-				}
+        if (!next.isEmpty) {
+          if (isBlack) {
+  					if (next.isWhite) {
+  						// opposite colors, add to stack, and keep going
+  						q.enqueue(next);
+  					} else if (next.isBlack) {
+  						// once find same color, flip colors
+  						while (q.size() > 0) {
+  							var cell = q.dequeue();
+  							cell.isBlack = !cell.isBlack;
+  							cell.isWhite = !cell.isWhite;
+  						}
+  					} else {
+  							// no match, but found a potential move?
+  							if (q.size() > 0) {
+  								q.clear();
+  							}
+  					}
+  				} else {
+  					if (next.isBlack) {
+  						q.enqueue(next);
+  					} else if (next.isWhite) {
+  						while (q.size() > 0) {
+  							var cell = q.dequeue();
+  							cell.isBlack = !cell.isBlack;
+  							cell.isWhite = !cell.isWhite;
+  						}
+  					} else {
+  						if (q.size() > 0) {
+  							q.clear();
+  						}
+  					}
+  				}
+        } else {
+          if (q.size() > 0) {
+            q.clear();
+          }
+          break;
+        }
       }
       // next coordinate
       x = x + DIRECTIONS[direction].x;
