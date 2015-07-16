@@ -1,17 +1,27 @@
-<div id="content" ng-controller='MainController as ctrl'>
-  <!-- heading -->
-  <div id="heading" class="row">
-    <h1 class="title center">Othello</h1>
-  </div>
+<main ng-controller='MainController as ctrl'>
 
-  <h2 class="center">Player {{game.playerOneTurn ? '1' : '2'}}'s Turn: {{game.playerOneTurn ? 'Black' : 'White'}}</h2>
+<header>
+    <h1 class="title center">Othello</h1>
+</header>
+
+<section class="col-md-8">
+
+  <div class="instructions">
+    <p>
+      Othello is a game played by ...
+    </p>
+  </div>
 
   <div class="board">
 		<div class="boardBody">
 			<div class="grid-container">
 				<div class="grid-row" ng-repeat="tiles in game.grid">
 					<div class="grid-tile" ng-repeat="tile in tiles.tiles">
-						<svg class="grid-cell-circle" ng-class="{'noFill': tile.isEmpty, 'availableBlack': (game.playerOneTurn && tile.isAvailableMove), 'availableWhite': (!game.playerOneTurn && tile.isAvailableMove)}" tile xindex="tile.xPosition" yindex="tile.yPosition" click-tile="ctrl.move">
+						<svg class="grid-cell-circle" ng-class="{'noFill': tile.isEmpty,
+              'availableBlack': (game.playerOneTurn && tile.isAvailableMove),
+              'availableWhite': (!game.playerOneTurn && tile.isAvailableMove)}"
+              tile available-move="tile.isAvailableMove" xindex="tile.xPosition"
+              yindex="tile.yPosition" click-tile="ctrl.move">
 							<circle ng-class="{ 'whiteFill': tile.isWhite, 'blackFill': tile.isBlack }" cx="30" cy="30" r="28"/>
 						</svg>
 					</div>
@@ -19,4 +29,33 @@
 			</div><!--/grid-container-->
 		</div><!--/boardBody-->
 	</div><!--/board-->
-</div>
+</section>
+
+<aside class="col-md-4">
+  <div class="stats">
+    <h2 class="center">Player {{game.playerOneTurn ? '1' : '2'}}'s Turn: {{game.playerOneTurn ? 'Black' : 'White'}}</h2>
+
+    <div class="col-md-4 col-md-offset-2">
+      <label class="right">Player 1:</label>
+    </div>
+    <div class="col-md-6">
+      <p class="score black">
+        {{game.playerOneScore}} score
+      </p>
+    </div>
+
+    <div class="col-md-4 col-md-offset-2">
+      <label class="right">Player 2:</label>
+    </div>
+    <div class="col-md-6">
+      <p class="score white">
+        {{game.playerTwoScore}} score
+      </p>
+    </div>
+
+    <div class="controls center">
+      <a ng-click="restart()" class="button">New Game</a>
+    </div>
+  </div>
+</aside>
+</main>

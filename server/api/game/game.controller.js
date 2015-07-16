@@ -65,7 +65,7 @@ exports.processMove = function(req, res) {
     xPos: data.xMove,
     yPos: data.yMove
   };
-  
+
   // retrieve db instance of game
   Game.findById(data.game._id, function(err, gameResult) {
     if (err) { return handleError(res, err);}
@@ -82,12 +82,12 @@ exports.processMove = function(req, res) {
 
 		var isNewGame = false;
 		gameResult = reverseTiles(gameResult, move);
-		
+
 		// set active player
 		gameResult.playerOneTurn = !gameResult.playerOneTurn;
-		
+
 		gameResult = findAvailableMoves(gameResult, isNewGame, move);
-		
+
     gameResult.save(function(err) {
       if (err) { return handleError(res, err); }
         return res.json(200, gameResult);
@@ -101,7 +101,6 @@ var DIRECTIONS = utilities.directions();
 var reverseTiles = function(game, move) {
   // reverseTiles based on the move performed
   // scan 8 directions to check for tile reversals
-  console.log('reversing tiles');
   var isBlack = game.grid[move.xPos].tiles[move.yPos].isBlack;
   for (var direction in DIRECTIONS){
     var xStart = move.xPos, yStart = move.yPos;
@@ -110,6 +109,11 @@ var reverseTiles = function(game, move) {
   return game;
 }
 
+/**
+For simplicity and readability, this function might be a bit verbose than needed
+in terms of how it was written; could potentially be optimized, but maybe that
+will be saved for a later date.
+**/
 var flipTiles = function(direction, xMove, yMove, isBlack, game) {
   //console.log('direction in flip', direction);
   var x = +xMove + +DIRECTIONS[direction].x, y = +yMove + +DIRECTIONS[direction].y;
@@ -119,12 +123,10 @@ var flipTiles = function(direction, xMove, yMove, isBlack, game) {
     while (x > -1 && y > -1 && x < 8 && y < 8) {
       var next = game.grid[x].tiles[y];
       if (next) {
-				//console.log('direction', direction);
 				// if new piece is black;
 				if (isBlack) {
 					if (next.isWhite) {
 						// opposite colors, add to stack, and keep going
-						console.log('adding node', next);
 						q.enqueue(next);
 					} else if (next.isBlack) {
 						// once find same color, flip colors
@@ -132,37 +134,34 @@ var flipTiles = function(direction, xMove, yMove, isBlack, game) {
 							var cell = q.dequeue();
 							cell.isBlack = !cell.isBlack;
 							cell.isWhite = !cell.isWhite;
-							console.log('changed cell color', isBlack);
-						} 
+						}
 					} else {
 							// no match, but found a potential move?
-							if (q.size() > 0) {							
+							if (q.size() > 0) {
 								q.clear();
 							}
 					}
 				} else {
 					if (next.isBlack) {
-						console.log('adding node2', next);
 						q.enqueue(next);
 					} else if (next.isWhite) {
 						while (q.size() > 0) {
 							var cell = q.dequeue();
 							cell.isBlack = !cell.isBlack;
 							cell.isWhite = !cell.isWhite;
-							console.log('changed cell color', isBlack);
 						}
 					} else {
 						if (q.size() > 0) {
 							q.clear();
 						}
 					}
-				} 
+				}
       }
+      // next coordinate
       x = x + DIRECTIONS[direction].x;
       y = y + DIRECTIONS[direction].y;
-      //console.log('x, y', x, y);
     }
-    return game; 
+    return game;
   } catch (err) {
     console.log('err', err);
   }
@@ -181,24 +180,31 @@ var findAvailableMoves = function(game, newGame, move) {
     grid[3].tiles[2].isAvailableMove = true;
     grid[2].tiles[3].isAvailableMove = true;
   } else {
+      game.playerOneScore = 0;
+      game.playerTwoScore = 0;
 			var pieces = [];
 			// scan board to find all pieces
 			for (var x = 0; x < grid.length; x++) {
 				for (var y = 0; y < grid[x].tiles.length; y++) {
-					if (!grid[x].tiles[y].isEmpty) {
+          var tile = grid[x].tiles[y];
+					if (!tile.isEmpty) {
 						// if tile not empty, add to array
 						pieces.push({ xPos: x, yPos: y});
+            // check current score
+            if (tile.isBlack) {
+              game.playerOneScore += 1;
+            } else if (tile.isWhite) {
+              game.playerTwoScore += 1;
+            }
 					}
 					// reset move availability
 					grid[x].tiles[y].isAvailableMove = false;
 				}
-			} 
-			console.log('pieces', pieces.length);
+			}
 			// iterate over pieces to search for available moves
 			for (var index = 0; index < pieces.length; index++) {
 				var gridX = pieces[index].xPos, gridY = pieces[index].yPos;
 				for (var direction in DIRECTIONS){
-					//console.log('piece ' + index, direction);
 					identifyAvailableMoves(gridX, gridY, game, direction);
 				}
 			}
@@ -206,43 +212,48 @@ var findAvailableMoves = function(game, newGame, move) {
   return game;
 };
 
+/**
+look for possible moves
+*/
 var identifyAvailableMoves = function(x, y, game, direction) {
 	// current piece
 	var piece = game.grid[x].tiles[y];
+  // next location based on direction
 	var nextX = x + DIRECTIONS[direction].x, nextY = y + DIRECTIONS[direction].y;
-	var isBlack = game.playerOneTurn;
+	// black piece?
+  var isBlack = game.playerOneTurn;
 	var q = new Queue();
+  var foundMoves = false;
 	try {
     // bounds check
     while (nextX > -1 && nextY > -1 && nextX < 8 && nextY < 8) {
+      // next piece to check
       var next = game.grid[nextX].tiles[nextY];
       if (next) {
 				// while pieces remain, keep checking
-				//console.log(nextX, nextY, direction);
 				if (!next.isEmpty) {
-					console.log('not empty');
 					// if player one's turn, looking for a beginning black piece and end of white
 					if (isBlack && piece.isBlack) {
 						if (next.isWhite) {
-							console.log('adding white', nextX, nextY, direction);
 							q.enqueue(next);
 						} else {
+              // if piece is the same color, then dont need to search further
+              // no valid moves in this direction
 							break;
 						}
 					} else if (!isBlack && piece.isWhite) {
 						if (next.isBlack) {
-							console.log('adding black', nextX, nextY, direction);
 							q.enqueue(next);
 						} else {
 							break;
 						}
 					}
 				} else {
-					console.log('empty', nextX, nextY, direction);
-					console.log('q.size', q.size());
+          // if some pieces were found along the way to be opposite color
+          // and an end piece of the same initial piece was found
 					if (q.size() > 0) {
+            foundMoves = true;
 						next.isAvailableMove = true;
-						console.log('setting available move', x, y);
 					}
 					break;
 				}
@@ -250,6 +261,7 @@ var identifyAvailableMoves = function(x, y, game, direction) {
 				nextY = nextY + DIRECTIONS[direction].y;
 			}
 		}
+    game.gameOver = game.gameOver && !foundMoves;
 		q.clear();
 	} catch (err) {
 		console.log('err', err);

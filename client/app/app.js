@@ -19,6 +19,7 @@ angular.module('reversiApp', ['Game',
   */
   .controller('MainController', function(GameService, $scope) {
     this.game = GameService;
+
     this.loadOrCreateGame = function() {
       // check browser if game exists
       if (localStorage && localStorage['othelloGameId']) {
@@ -26,10 +27,13 @@ angular.module('reversiApp', ['Game',
         GameService.getGame(gameId, function(game) {
           $scope.game = game;
           console.log('gotGame', game);
+        }).error(function(err) {
+          console.log('err', err);
         });
       } else {
         GameService.createGame(function (game) {
           $scope.game = game;
+
           if (localStorage) {
             // left commented out while developing
             // though the storage of game id needs to be tested further
@@ -50,4 +54,15 @@ angular.module('reversiApp', ['Game',
         $scope.game = result;
       });
     };
+
+    this.restart = function() {
+      console.log('deleting');
+      delete localStorage['othelloGameId'];
+      GameService.delete(game._id, function(result) {
+        if (result) {
+          console.log('delete successul');
+        }
+      });
+      this.loadOrCreateGame();
+    }
 });

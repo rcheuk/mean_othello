@@ -2,14 +2,14 @@
 
 angular.module('reversiApp')
   .controller('NavbarCtrl', function ($scope, $location) {
-    $scope.menu = [{
+    this.menu = [{
       'title': 'Home',
       'link': '/'
     }];
 
-    $scope.isCollapsed = true;
+    this.isCollapsed = true;
 
-    $scope.isActive = function(route) {
+    this.isActive = function(route) {
       return route === $location.path();
     };
   });

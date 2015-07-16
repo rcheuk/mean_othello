@@ -12,6 +12,10 @@ angular.module('Game', ['Grid', 'ngCookies'])
   gameFactory.getGame = function() {
     var game = {};
     game.playerOneTurn = true;
+    game.playerOneScore = 0;
+    game.playerTwoScore = 0;
+    game.availableMovesRemain = true;
+    game.gameOver = false;
     game.grid = null;
     return game;
   }
@@ -22,16 +26,14 @@ angular.module('Game', ['Grid', 'ngCookies'])
 
   this.grid = GridService.grid;
 
-  this.reinit = function() {
-    this.gameOver = false;
-    this.playerOneScore = 0;
-    this.playerTwoScore = 0;
-  };
-
-  this.reinit();
-
   this.getGame = function(id, callback) {
     $http.get('/api/games/' + id).success( function(game) {
+      callback(game);
+    });
+  }
+
+  this.deleteGame = function(id, callback) {
+    $http.delete('/api/games/' + id).success( function(game) {
       callback(game);
     });
   }
@@ -48,7 +50,6 @@ angular.module('Game', ['Grid', 'ngCookies'])
         callback(null);
       }
     });
-    this.reinit();
   }
 
   this.processMove = function(x, y, _game, callback) {
@@ -60,15 +61,5 @@ angular.module('Game', ['Grid', 'ngCookies'])
     $http.post('/api/games/processMove', move).success(function (game) {
       callback(game);
     });
-
   }
-
-  this.movesAvailable = function() {
-
-  };
-
-  this.updateScore = function() {
-
-  };
-
 });
